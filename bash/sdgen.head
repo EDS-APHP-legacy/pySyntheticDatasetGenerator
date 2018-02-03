@@ -1,0 +1,33 @@
+#!/bin/bash
+usage="$(basename "$0") [-h] [-i -s n] -- remove s rows from file
+
+where:
+    -h  show this help text
+    -i  set the input path    (needed)
+    -s  set the size   (needed)
+    "
+
+percentMemory=80
+while getopts ':h:i:s:' option; do
+  case "$option" in
+    h) echo "$usage"
+       exit
+       ;;
+    i) input=$OPTARG
+       ;;
+    s) size=$OPTARG
+       ;;
+    :) printf "missing argument for -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+   \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+  esac
+done
+shift $((OPTIND - 1))
+tmp="_tmp"
+sed -e :a -e '$d;N;2,'"$size"'ba' -e 'P;D' "$input" > "$input$tmp" && 
+mv "$input$tmp" "$input"

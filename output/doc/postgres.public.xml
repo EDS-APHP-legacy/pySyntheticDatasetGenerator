@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<database name="postgres" schema="public" type="PostgreSQL - 9.6.2">
+   <tables>
+      <table name="principal" numRows="20000" remarks="This is the principal table" schema="public" type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="id_principal" nullable="false" remarks="unique identifier" size="10" type="int4">
+            <child column="id_principal" foreignKey="fk_secondary_principal_id_principal" implied="false" onDeleteCascade="false" table="secondary"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="cd_principal" nullable="true" remarks="this is a functional code" size="2147483647" type="varchar"/>
+         <column autoUpdated="false" digits="6" id="2" name="moment" nullable="true" remarks="this is a timestamp" size="29" type="timestamp"/>
+         <column autoUpdated="false" digits="8" id="3" name="length" nullable="true" remarks="this is a length" size="8" type="float4"/>
+         <primaryKey column="id_principal" sequenceNumberInPK="1"/>
+         <index name="pk_principal" unique="true">
+            <column ascending="true" name="id_principal"/>
+         </index>
+      </table>
+      <table name="ref" numRows="6" remarks="terminology table" schema="public" type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="id_ref" nullable="false" remarks="unique identifier" size="10" type="int4">
+            <child column="id_ref" foreignKey="fk_secondary_ref_id_ref" implied="false" onDeleteCascade="false" table="secondary"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="cd_ref" nullable="true" remarks="" size="2147483647" type="varchar"/>
+         <primaryKey column="id_ref" sequenceNumberInPK="1"/>
+         <index name="pk_ref" unique="true">
+            <column ascending="true" name="id_ref"/>
+         </index>
+      </table>
+      <table name="secondary" numRows="10000" remarks="this is a secondary table" schema="public" type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="id_secondary" nullable="false" remarks="unique identifier" size="10" type="int4"/>
+         <column autoUpdated="false" digits="0" id="1" name="id_principal" nullable="true" remarks="" size="10" type="int4">
+            <parent column="id_principal" foreignKey="fk_secondary_principal_id_principal" implied="false" onDeleteCascade="false" table="principal"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="id_ref" nullable="true" remarks="" size="10" type="int4">
+            <parent column="id_ref" foreignKey="fk_secondary_ref_id_ref" implied="false" onDeleteCascade="false" table="ref"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="3" name="value_text" nullable="true" remarks="" size="2147483647" type="varchar"/>
+         <primaryKey column="id_secondary" sequenceNumberInPK="1"/>
+         <index name="pk_secondary" unique="true">
+            <column ascending="true" name="id_secondary"/>
+         </index>
+      </table>
+   </tables>
+</database>

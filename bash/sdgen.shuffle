@@ -1,0 +1,39 @@
+#!/bin/bash
+usage="$(basename "$0") [-h] [-i -s n] -- shuffle a file
+
+where:
+    -h  show this help text
+    -i  set the input path    (needed)
+    -s  set the output path   (needed)
+    "
+
+percentMemory=80
+while getopts ':h:i:s:' option; do
+  case "$option" in
+    h) echo "$usage"
+       exit
+       ;;
+    i) input=$OPTARG
+       ;;
+    s) seed=$OPTARG
+       ;;
+    :) printf "missing argument for -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+   \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+  esac
+done
+shift $((OPTIND - 1))
+get_seeded_random()
+{
+  seed="$1"
+  openssl enc -aes-256-ctr -pass pass:"$seed" -nosalt \
+    </dev/zero 2>/dev/null
+}
+tmp="_tmp"
+shuf $input --random-source=<(get_seeded_random $seed)  -o $input$tmp &&
+cp $input$tmp $input

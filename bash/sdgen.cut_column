@@ -1,0 +1,46 @@
+#!/bin/bash
+usage="$(basename "$0") [-h] [-i -o -c -s n] -- extract a csv column
+
+where:
+    -h  show this help text
+    -i  set the input path    (needed)
+    -o  set the output path   (needed)
+    -c  set the number column (needed)
+    -s  set the separator (default: ;)
+    -q  set wether quote  (default: false)
+    "
+sep=";"
+quote=false
+while getopts ':h:i:o:c:s:q:' option; do
+  case "$option" in
+    h) echo "$usage"
+       exit
+       ;;
+    i) input=$OPTARG
+       ;;
+    o) output=$OPTARG
+       ;;
+    c) col=$OPTARG
+       ;;
+    s) sep=$OPTARG
+       ;;
+    q) quote=$OPTARG
+       ;;
+    :) printf "missing argument for -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+   \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ $quote = true ] ; 
+then 
+	mawk -v col=$col  -F "\"$sep\"" ' { gsub("^\"|\"$",""); print $col }' $input  > $output
+else
+	mawk -v col=$col  -F "$sep"     ' { print $col }'                     $input  > $output
+fi

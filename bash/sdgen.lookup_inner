@@ -1,0 +1,49 @@
+#!/bin/bash
+usage="$(basename "$0") [-h] [-l -b -i -c -o n] -- reduce a file from a lookup file with both separators=;
+
+where:
+    -h  show this help text
+    -l  set the lookup file path    (needed)
+    -b  set the lookup column number  (needed)
+    -i  set the input (needed)
+    -c  set the input columnt (needed)
+    -o  set the output file path (needed)
+   
+    "
+sep=";"
+while getopts ':h:b:l:c:i:o:s:' option; do
+  case "$option" in
+    h) echo "$usage"
+       exit
+       ;;
+    l) lookup_file=$OPTARG
+       ;;
+    b) lookup_column_index=$OPTARG
+       ;;
+    i) input_file=$OPTARG
+       ;;
+    c) input_column_index=$OPTARG
+       ;;
+    o) output_file=$OPTARG
+       ;;
+    :) printf "missing argument for -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+   \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+  esac
+done
+shift $((OPTIND - 1))
+mawk -v li=$lookup_column_index -v si=$input_column_index ' BEGIN {FS=OFS=";"}
+{
+        if(NR==FNR){
+		a[$li];
+                next
+        }
+	if( $si in a){
+                print $0
+        }
+}' $lookup_file $input_file 

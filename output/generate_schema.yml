@@ -1,0 +1,89 @@
+databaseChangeLog:
+- changeSet:
+  - id: 1
+  - changes:
+    - sql:
+      - sql: DROP TABLE IF EXISTS principal CASCADE;
+    - sql:
+      - sql: DROP TABLE IF EXISTS secondary CASCADE;
+    - sql:
+      - sql: DROP TABLE IF EXISTS ref CASCADE;
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+            name: id_principal
+            remarks: unique identifier
+            type: INTEGER
+        - column:
+            name: cd_principal
+            remarks: this is a functional code
+            type: VARCHAR
+        - column:
+            name: moment
+            remarks: this is a timestamp
+            type: TIMESTAMP
+        - column:
+            name: length
+            remarks: this is a length
+            type: REAL
+        remarks: This is the principal table
+        tableName: principal
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+            name: id_secondary
+            remarks: unique identifier
+            type: INTEGER
+        - column:
+            constraints:
+              lookupBegin: 2
+            name: id_principal
+            type: INTEGER
+        - column:
+            constraints:
+              lookupBegin: 2
+            name: id_ref
+            type: INTEGER
+        - column:
+            name: value_text
+            type: VARCHAR
+        remarks: this is a secondary table
+        tableName: secondary
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+            name: id_ref
+            remarks: unique identifier
+            type: INTEGER
+        - column:
+            name: cd_ref
+            type: VARCHAR
+        remarks: terminology table
+        tableName: ref
+    - sql:
+      - sql: COPY principal FROM '/app/edsr/projets/EDSI/REA/pySyntheticDataGenerator/output/principal.csv'
+          CSV DELIMITER ';'
+    - sql:
+      - sql: COPY secondary FROM '/app/edsr/projets/EDSI/REA/pySyntheticDataGenerator/output/secondary.csv'
+          CSV DELIMITER ';'
+    - sql:
+      - sql: COPY ref FROM '/app/edsr/projets/EDSI/REA/pySyntheticDataGenerator/output/ref.csv'
+          CSV DELIMITER ';'
+    - addForeignKeyConstraint:
+      - baseColumnNames: id_principal
+      - baseTableName: secondary
+      - referencedColumnNames: id_principal
+      - referencedTableName: principal
+      - constraintName: fk_secondary_principal_id_principal
+    - addForeignKeyConstraint:
+      - baseColumnNames: id_ref
+      - baseTableName: secondary
+      - referencedColumnNames: id_ref
+      - referencedTableName: ref
+      - constraintName: fk_secondary_ref_id_ref

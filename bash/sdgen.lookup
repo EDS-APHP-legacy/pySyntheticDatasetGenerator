@@ -1,0 +1,35 @@
+#!/bin/bash
+usage="$(basename "$0") [-h] [-l -r -s n] -- lookup two files column
+
+where:
+    -h  show this help text
+    -l  set the left column path    (needed)
+    -r  set the right column path    (needed)
+    -s  set the separator (default: ;)
+    "
+sep=";"
+quote=false
+while getopts ':h:l:r:s:q:' option; do
+  case "$option" in
+    h) echo "$usage"
+       exit
+       ;;
+    l) left=$OPTARG
+       ;;
+    r) right=$OPTARG
+       ;;
+    s) sep=$OPTARG
+       ;;
+    :) printf "missing argument for -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+   \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+  esac
+done
+shift $((OPTIND - 1))
+tmp="_tmp"
+sort -g  -t";" -k 2 <(join --nocheck-order -t";" -1 1 -2 1 <(sort -g   -t";" -k 1b,1 <(awk '{printf "%s;%d\n",  $0, NR}' < $left)) <(sort -g -t";" -k 1b,1 <(awk '{printf "%d;%s\n", NR, $0}' < $right)))  | cut -d ";" -f3 > $left$tmp && mv $left$tmp $left

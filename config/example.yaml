@@ -1,0 +1,77 @@
+- createTable:
+        tableName: 'principal'
+        tableSize: 20000
+        remarks: 'This is the principal table'
+        columns:
+            - column:
+                name: 'id_principal'
+                genClass: 'sequence'
+                sequenceBegin: -1
+                type: 'INTEGER'
+                constraints:
+                    primaryKey: True
+                remarks: "unique identifier"
+            - column:
+                name: 'cd_principal'
+                genClass: 'simple'
+                type: 'VARCHAR'
+                regex: '0\d{8}'
+                remarks: 'this is a functional code'
+            - column:
+                name: 'moment'
+                genClass: 'simple'
+                type: 'TIMESTAMP'
+                remarks: 'this is a timestamp'
+            - column:
+                name: 'length'
+                genClass: 'simple'
+                type: 'REAL'
+                remarks: 'this is a length'
+- createTable:
+     tableName: 'secondary'
+     tableSize: 10000
+     remarks: 'this is a secondary table'
+     columns:
+             - column:
+                     name: 'id_secondary'
+                     genClass: sequence
+                     sequenceBegin: -1
+                     type: 'INTEGER'
+                     constraints:
+                                primaryKey: True
+                     remarks: "unique identifier"
+             - column: 
+                name: id_principal
+                genClass: lookup
+                type: INTEGER
+                constraints:
+                        referencedTable: principal
+                        referencedColumn: id_principal
+                        lookupBegin: 2
+             - column:
+                        name: "id_ref"
+                        genClass: 'lookup'
+                        type: 'INTEGER'
+                        constraints:
+                            referencedTable: 'ref'
+                            referencedColumn: 'id_ref'
+                            lookupBegin: 2
+             - column:
+                     name: value_text
+                     genClass: simple
+                     type: VARCHAR
+                     regex: 'a|o|i|o|u'
+- createTable:
+        tableName: 'ref'
+        source: True
+        remarks: 'terminology table'
+        columns:
+                - column:
+                        name: 'id_ref'
+                        type: 'INTEGER'
+                        constraints:
+                                primaryKey: True
+                        remarks: "unique identifier"
+                - column:
+                        name: 'cd_ref'
+                        type: 'VARCHAR'

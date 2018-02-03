@@ -1,0 +1,42 @@
+#!/bin/bash
+usage="$(basename "$0") [-h] [-i -o -c -p n] -- shuffle a file
+
+where:
+    -h  show this help text
+    -i  set the input path    (needed)
+    -o  set the output path   (needed)
+    -c  set the number core (needed)
+    -p  set the memory percent max (default: 80)
+    "
+
+percentMemory=80
+while getopts ':h:i:o:c:p:' option; do
+  case "$option" in
+    h) echo "$usage"
+       exit
+       ;;
+    i) input=$OPTARG
+       ;;
+    o) output=$OPTARG
+       ;;
+    c) nbCore=$OPTARG
+       ;;
+    p) percentMemory=$OPTARG
+       ;;
+    :) printf "missing argument for -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+   \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+  esac
+done
+shift $((OPTIND - 1))
+size=$(wc -l  $input | mawk '{print $1}')
+
+shuf -i 1-$size -n $size  -o shuf.csv &&
+paste -d, shuf.csv $input > paste.csv &&
+sort -t, -k1 -n -S $percentMemory% --parallel=$nbCore  paste.csv | cut -d, -f2 > $output &&
+rm paste.csv shuf.csv &
