@@ -6,7 +6,7 @@
 pip install -r requirements.txt
 ```
 - python >=3.6
-- liquibase in the path (in case documentation generation needed
+- liquibase in the path (in case documentation generation needed)
 - postgresql database (in case both documentation & data loaded needed)
 
 ## Run
