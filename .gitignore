@@ -97,7 +97,6 @@ input/
 tmp/
 source/
 fhir/
-config/
 
 databasechangelog.csv
 
